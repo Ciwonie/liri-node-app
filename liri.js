@@ -20,8 +20,6 @@ inquirer
         },
     ])
     .then(function (inquirerResponse) {
-        // If the inquirerResponse confirms, we displays the inquirerResponse's username and pokemon from the answers.
-        // We'll have 4 if statements representing what the user ch
         if (inquirerResponse.liri === 'Find Songs') {
             console.log("\nYou chose: " + inquirerResponse.liri);
 
@@ -110,8 +108,8 @@ inquirer
                 }
 
                 var output = data.split(',');
-                console.log('\n Command: ' + output[0]);
-                console.log('\n Option: ' + output[1]);
+                console.log('\nCommand: ' + output[0]);
+                console.log('\nOption: ' + output[1]);
 
                 if (output[0] === 'spotify-this-song') {
                     spotify
