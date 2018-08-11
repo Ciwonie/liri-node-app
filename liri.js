@@ -8,7 +8,9 @@ var spotify = new Spotify(keys.spotify);
 
 var request = require('request');
 var fs = require('fs');
-// var client = new Twitter(keys.twitter);
+
+var Twitter = require('twitter');
+var client = new Twitter(keys.twitter);
 
 inquirer
     .prompt([
@@ -35,7 +37,6 @@ inquirer
                     spotify
                         .search({ type: 'track', query: (songChoice.songName) ? songChoice.songName : 'The Sign by Ace of Base' })
                         .then(function (response) {
-                            console.log('\nTEST: ' + response)
                             console.log('\nArtist: ' + response.tracks.items[0].artists[0].name);
                             console.log('\nAlbum: ' + response.tracks.items[0].album.name);
                             console.log('\nLink: ' + response.tracks.items[0].album.external_urls.spotify);
@@ -44,6 +45,43 @@ inquirer
                         .catch(function (err) {
                             console.log(err);
                         });
+
+                });
+        }
+        else if (inquirerResponse.liri === 'Check Tweets') {
+            console.log("\nYou chose: " + inquirerResponse.liri);
+
+            inquirer
+                .prompt([
+                    {
+                        type: "name",
+                        message: "Whose Tweets do you want to see?",
+                        name: "twitterName"
+                    },
+                ])
+                .then(function (tweetChoice) {
+
+                    if (tweetChoice.twitterName) {
+                        var params = { screen_name: tweetChoice.twitterName, count: 20 };
+                        client.get('statuses/user_timeline', params, function (error, tweets, response) {
+                            if (!error) {
+                                for (var i in tweets) {
+                                    console.log('\nTweets:  ' + tweets[i].text);
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        var params = { screen_name: 'rickygervais', count: 20 };
+                        client.get('statuses/user_timeline', params, function (error, tweets, response) {
+                            if (!error) {
+                                console.log('Ricky Gervais: ')
+                                for (var i in tweets) {
+                                    console.log('\nTweets:  ' + tweets[i].text);
+                                }
+                            }
+                        });
+                    }
 
                 });
         }
@@ -61,9 +99,9 @@ inquirer
                 .then(function (movieChoice) {
                     var movie = movieChoice.movieName.replace(/\s+/g, '+').toLowerCase();
                     var queryUrl = "http://www.omdbapi.com/?t=" + movie + "&y=&plot=short&apikey=trilogy";
-                    
+
                     if (movie) {
-                        request(queryUrl, function(error, response, body) {
+                        request(queryUrl, function (error, response, body) {
                             if (!error && response.statusCode === 200) {
                                 console.log('\nTitle: ' + JSON.parse(body).Title);
                                 console.log('\nRelease Year: ' + JSON.parse(body).Year);
@@ -75,11 +113,11 @@ inquirer
                                 console.log('\nIMDB Rating: ' + JSON.parse(body).Ratings[0].Value);
                                 console.log('\nRotten Tomatoes Rating: ' + JSON.parse(body).Ratings[1].Value);
                             }
-                            
+
                         })
                     }
                     else {
-                        request("http://www.omdbapi.com/?t=mr+nobody&y=&plot=short&apikey=trilogy", function(error, response, body) {
+                        request("http://www.omdbapi.com/?t=mr+nobody&y=&plot=short&apikey=trilogy", function (error, response, body) {
                             if (!error && response.statusCode === 200) {
                                 console.log('\nTitle: ' + JSON.parse(body).Title);
                                 console.log('\nRelease Year: ' + JSON.parse(body).Year);
@@ -91,7 +129,7 @@ inquirer
                                 console.log('\nIMDB Rating: ' + JSON.parse(body).Ratings[0].Value);
                                 console.log('\nRotten Tomatoes Rating: ' + JSON.parse(body).Ratings[1].Value);
                             }
-                            
+
                         })
                     }
                 })
@@ -102,7 +140,7 @@ inquirer
         else if (inquirerResponse.liri === 'Random.txt') {
             console.log("\nYou chose: " + inquirerResponse.liri);
 
-            fs.readFile('random.txt', 'utf8', function(err, data) {
+            fs.readFile('random.txt', 'utf8', function (err, data) {
                 if (err) {
                     return console.log(err);
                 }
@@ -113,20 +151,31 @@ inquirer
 
                 if (output[0] === 'spotify-this-song') {
                     spotify
-                    .search({ type: 'track', query: output[1]})
-                    .then(function (response) {
-                        console.log('\nArtist: ' + response.tracks.items[0].artists[0].name);
-                        console.log('\nAlbum: ' + response.tracks.items[0].album.name);
-                        console.log('\nLink: ' + response.tracks.items[0].album.external_urls.spotify);
-                        console.log('\nSong: ' + response.tracks.items[0].name);
-                    })
-                    .catch(function (err) {
-                        console.log(err);
+                        .search({ type: 'track', query: output[1] })
+                        .then(function (response) {
+                            console.log('\nArtist: ' + response.tracks.items[0].artists[0].name);
+                            console.log('\nAlbum: ' + response.tracks.items[0].album.name);
+                            console.log('\nLink: ' + response.tracks.items[0].album.external_urls.spotify);
+                            console.log('\nSong: ' + response.tracks.items[0].name);
+                        })
+                        .catch(function (err) {
+                            console.log(err);
+                        });
+                }
+                else if (output[0] === 'my-tweets') {
+                    var name = output[1].replace(/["']/g, "")
+                    var params = { screen_name: name, count: 20 };
+                    client.get('statuses/user_timeline', params, function (error, tweets, response) {
+                        if (!error) {
+                            for (var i in tweets) {
+                                console.log('\nTweets:  ' + tweets[i].text);
+                            }
+                        }
                     });
-                } 
+                }
                 else if (output[0] === 'movie-this') {
                     var randomMovie = output[1].replace(/\s+/g, '+').toLowerCase();
-                    request("http://www.omdbapi.com/?t=" + randomMovie + "&y=&plot=short&apikey=trilogy", function(error, response, body) {
+                    request("http://www.omdbapi.com/?t=" + randomMovie + "&y=&plot=short&apikey=trilogy", function (error, response, body) {
                         if (!error && response.statusCode === 200) {
                             console.log('\nTitle: ' + JSON.parse(body).Title);
                             console.log('\nRelease Year: ' + JSON.parse(body).Year);
