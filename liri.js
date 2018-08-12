@@ -12,6 +12,8 @@ var fs = require('fs');
 var Twitter = require('twitter');
 var client = new Twitter(keys.twitter);
 
+var space = '\n-------------------------------------\n\n';
+
 inquirer
     .prompt([
         {
@@ -41,6 +43,25 @@ inquirer
                             console.log('\nAlbum: ' + response.tracks.items[0].album.name);
                             console.log('\nLink: ' + response.tracks.items[0].album.external_urls.spotify);
                             console.log('\nSong: ' + response.tracks.items[0].name);
+
+                            data = [
+                                '\nArtist: ' + response.tracks.items[0].artists[0].name,
+                                '\nAlbum: ' + response.tracks.items[0].album.name,
+                                '\nLink: ' + response.tracks.items[0].album.external_urls.spotify,
+                                '\nSong: ' + response.tracks.items[0].name
+                            ]
+
+                            fs.appendFile("log.txt", data + space, function(err) {
+
+                                // If the code experiences any errors it will log the error to the console.
+                                if (err) {
+                                  return console.log(err);
+                                }
+                              
+                                // Otherwise, it will print: "movies.txt was updated!"
+                                console.log("log.txt was updated!");
+                              
+                              });
                         })
                         .catch(function (err) {
                             console.log(err);
@@ -113,6 +134,30 @@ inquirer
                                 console.log('\nIMDB Rating: ' + JSON.parse(body).Ratings[0].Value);
                                 console.log('\nRotten Tomatoes Rating: ' + JSON.parse(body).Ratings[1].Value);
                             }
+
+                            data = [
+                                '\nTitle: ' + JSON.parse(body).Title,
+                                '\nRelease Year: ' + JSON.parse(body).Year,
+                                '\nRated: ' + JSON.parse(body).Rated,
+                                '\nActors: ' + JSON.parse(body).Actors,
+                                '\nPlot: ' + JSON.parse(body).Plot,
+                                '\nLanguages: ' + JSON.parse(body).Language,
+                                '\nCountries: ' + JSON.parse(body).Country,
+                                '\nIMDB Rating: ' + JSON.parse(body).Ratings[0].Value,
+                                '\nRotten Tomatoes Rating: ' + JSON.parse(body).Ratings[1].Value,
+                            ]
+
+                            fs.appendFile("log.txt", data + space, function(err) {
+
+                                // If the code experiences any errors it will log the error to the console.
+                                if (err) {
+                                  return console.log(err);
+                                }
+                              
+                                // Otherwise, it will print: "movies.txt was updated!"
+                                console.log("log.txt was updated!");
+                              
+                              });
 
                         })
                     }
