@@ -20,7 +20,7 @@ TWITTER_ACCESS_TOKEN_SECRET=your-twitter-access-token-secret
 
 ```
 
-If you need keys, use the following hyperlinks: [Spotify](https://www.npmjs.com/package/node-spotify-api) & [Twitter](https://apps.twitter.com/app/new)
+If you need keys, use the following hyperlinks: [Spotify](https://developer.spotify.com/my-applications/#!/) & [Twitter](https://apps.twitter.com/app/new)
 
 * Once your .env file is prepared, you are ready to run the app.
 
